@@ -26,7 +26,7 @@ public class Task {
         this.id = id;
         this.title = title;
         this.description = description;
-        this.createdAt = createdAt;
+        this.createdAt = LocalDateTime.now();
         this.finishedAt = finishedAt;
         this.status = status;
         this.priority = priority;
