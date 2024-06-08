@@ -5,6 +5,7 @@ import com.project.task_manager.dto.TaskDTO;
 import com.project.task_manager.repositories.TaskRepository;
 import com.project.task_manager.services.exceptions.DatabaseException;
 import com.project.task_manager.services.exceptions.ResourceNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -32,6 +33,17 @@ public class TaskService {
         copyDtoToEntity(dto, entity);
         entity = repository.save(entity);
         return new TaskDTO(entity);
+    }
+
+    public TaskDTO updateTask(Long id, TaskDTO dto) {
+        try {
+            Task entity = repository.getReferenceById(id);
+            copyDtoToEntity(dto, entity);
+            entity = repository.save(entity);
+            return new TaskDTO(entity);
+        }catch (EntityNotFoundException e) {
+            throw new ResourceNotFoundException("Recurso não encontrado");
+        }
     }
 
     @Transactional(propagation = Propagation.SUPPORTS)
