@@ -3,8 +3,12 @@ package com.project.task_manager.services;
 import com.project.task_manager.domain.Task;
 import com.project.task_manager.dto.TaskDTO;
 import com.project.task_manager.repositories.TaskRepository;
+import com.project.task_manager.services.exceptions.DatabaseException;
+import com.project.task_manager.services.exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -30,6 +34,18 @@ public class TaskService {
         return new TaskDTO(entity);
     }
 
+    @Transactional(propagation = Propagation.SUPPORTS)
+    public void deleteTask(Long id) {
+        if (!repository.existsById(id)) {
+            throw new ResourceNotFoundException("Task não encontrado");
+        }
+        try {
+            repository.deleteById(id);
+        }
+        catch (DataIntegrityViolationException e) {
+            throw new DatabaseException("Falha de integridade referencial");
+        }
+    }
 
 
     private void copyDtoToEntity(TaskDTO dto, Task entity) {
