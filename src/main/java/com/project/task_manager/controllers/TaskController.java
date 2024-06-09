@@ -32,4 +32,10 @@ public class TaskController {
 
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<TaskDTO> updateTask(@PathVariable Long id, @RequestBody TaskDTO dto){
+        dto = service.updateTask(id, dto);
+        return ResponseEntity.ok(dto);
+    }
+
 }
