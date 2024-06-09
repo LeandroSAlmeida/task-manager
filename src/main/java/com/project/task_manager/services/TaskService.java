@@ -34,7 +34,7 @@ public class TaskService {
         entity = repository.save(entity);
         return new TaskDTO(entity);
     }
-
+    @Transactional
     public TaskDTO updateTask(Long id, TaskDTO dto) {
         try {
             Task entity = repository.getReferenceById(id);
