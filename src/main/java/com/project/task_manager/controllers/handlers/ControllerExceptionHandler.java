@@ -1,6 +1,7 @@
 package com.project.task_manager.controllers.handlers;
 
 import com.project.task_manager.dto.CustomError;
+import com.project.task_manager.services.exceptions.DatabaseException;
 import com.project.task_manager.services.exceptions.ResourceNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -18,4 +19,12 @@ public class ControllerExceptionHandler {
         CustomError err = new CustomError(Instant.now(),status.value(),e.getMessage(),request.getRequestURI());
         return ResponseEntity.status(status).body(err);
     }
+
+    @ExceptionHandler(DatabaseException.class)
+    public ResponseEntity<CustomError> database(DatabaseException e, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        CustomError err = new CustomError(Instant.now(),status.value(),e.getMessage(),request.getRequestURI());
+        return ResponseEntity.status(status).body(err);
+    }
+
 }
