@@ -5,6 +5,7 @@ import com.project.task_manager.domain.Status;
 import com.project.task_manager.domain.Task;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
 
@@ -16,9 +17,9 @@ public class TaskDTO {
     private String description;
     @Future
     private LocalDateTime finishedAt;
-    @NotBlank(message = "Required status field")
+    @NotNull(message = "Status cannot be null")
     private Status status;
-    @NotBlank(message = "Required priority field")
+    @NotNull(message = "Priority cannot be null")
     private Priority priority;
 
     public TaskDTO(Long id, String title, String description, LocalDateTime finishedAt, Status status, Priority priority) {
