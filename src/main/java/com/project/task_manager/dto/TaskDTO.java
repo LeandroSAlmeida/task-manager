@@ -3,15 +3,22 @@ package com.project.task_manager.dto;
 import com.project.task_manager.domain.Priority;
 import com.project.task_manager.domain.Status;
 import com.project.task_manager.domain.Task;
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.NotBlank;
 
 import java.time.LocalDateTime;
 
 public class TaskDTO {
     private Long id;
+    @NotBlank(message = "Title cannot be empty")
     private String title;
+    @NotBlank(message = "Required field")
     private String description;
+    @Future
     private LocalDateTime finishedAt;
+    @NotBlank(message = "Required status field")
     private Status status;
+    @NotBlank(message = "Required priority field")
     private Priority priority;
 
     public TaskDTO(Long id, String title, String description, LocalDateTime finishedAt, Status status, Priority priority) {
