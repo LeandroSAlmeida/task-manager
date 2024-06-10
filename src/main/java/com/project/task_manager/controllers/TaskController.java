@@ -2,6 +2,7 @@ package com.project.task_manager.controllers;
 
 import com.project.task_manager.dto.TaskDTO;
 import com.project.task_manager.services.TaskService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +25,7 @@ public class TaskController {
     }
 
     @PostMapping
-    public ResponseEntity<TaskDTO> createTask(@RequestBody TaskDTO dto){
+    public ResponseEntity<TaskDTO> createTask(@Valid @RequestBody TaskDTO dto){
         dto = service.insertTask(dto);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequestUri().path("/{id}")
                 .buildAndExpand(dto.getId()).toUri();
@@ -33,7 +34,7 @@ public class TaskController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<TaskDTO> updateTask(@PathVariable Long id, @RequestBody TaskDTO dto){
+    public ResponseEntity<TaskDTO> updateTask(@Valid @PathVariable Long id, @RequestBody TaskDTO dto){
         dto = service.updateTask(id, dto);
         return ResponseEntity.ok(dto);
     }
