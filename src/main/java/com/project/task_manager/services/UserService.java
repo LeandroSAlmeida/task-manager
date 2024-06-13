@@ -44,7 +44,7 @@ public class UserService {
     @Transactional
     public UserDTO insert(UserInsertDTO dto){
         User entity = new User();
-        copyDtotoEntity(dto,entity);
+        copyDtoToEntity(dto,entity);
         entity.setPassword(passwordEncoder.encode(dto.getPassword()));
         entity = repository.save(entity);
         return new UserDTO(entity);
@@ -54,7 +54,7 @@ public class UserService {
     public UserDTO update(Long id,UserDTO dto) {
         try {
             User entity = repository.getReferenceById(id);
-            copyDtotoEntity(dto,entity);
+            copyDtoToEntity(dto,entity);
             entity = repository.save(entity);
             return new UserDTO(entity);
         } catch (EntityNotFoundException e) {
@@ -75,7 +75,7 @@ public class UserService {
     }
 
 
-    private void copyDtotoEntity(UserDTO dto, User entity) {
+    private void copyDtoToEntity(UserDTO dto, User entity) {
         entity.setFirstName(dto.getFirstName());
         entity.setLastName(dto.getLastName());
         entity.setEmail(dto.getEmail());
