@@ -1,6 +1,7 @@
 package com.project.task_manager.services;
 
 import com.project.task_manager.domain.Task;
+import com.project.task_manager.domain.User;
 import com.project.task_manager.dto.TaskDTO;
 import com.project.task_manager.repositories.TaskRepository;
 import com.project.task_manager.services.exceptions.DatabaseException;
@@ -20,17 +21,28 @@ public class TaskService {
 
     @Autowired
     private TaskRepository repository;
+    @Autowired
+    private AuthService authService;
+    @Autowired
+    private UserService userService;
 
     @Transactional(readOnly = true)
-    public List<TaskDTO> findAllTask() {
-        List<Task> result = repository.findAll();
-        return  result.stream().map( x -> new TaskDTO(x)).collect(Collectors.toList());
+    public List<TaskDTO> findAllTasks() {
+        User user = userService.authenticated();
+        List<Task> result;
+        if (user.hasRole("ROLE_ADMIN")) {
+            result = repository.findAll();
+        } else {
+            result = repository.findByUser(user);
+        }
+        return result.stream().map(TaskDTO::new).collect(Collectors.toList());
     }
 
     @Transactional
     public TaskDTO insertTask(TaskDTO dto) {
         Task entity = new Task();
         copyDtoToEntity(dto, entity);
+        entity.setUser(userService.authenticated());
         entity = repository.save(entity);
         return new TaskDTO(entity);
     }
@@ -38,23 +50,22 @@ public class TaskService {
     public TaskDTO updateTask(Long id, TaskDTO dto) {
         try {
             Task entity = repository.getReferenceById(id);
+            authService.validateSelfOrAdmin(entity.getUser().getId());
             copyDtoToEntity(dto, entity);
             entity = repository.save(entity);
             return new TaskDTO(entity);
-        }catch (EntityNotFoundException e) {
+        } catch (EntityNotFoundException e) {
             throw new ResourceNotFoundException("Recurso não encontrado");
         }
     }
 
     @Transactional(propagation = Propagation.SUPPORTS)
     public void deleteTask(Long id) {
-        if (!repository.existsById(id)) {
-            throw new ResourceNotFoundException("Task não encontrado");
-        }
+        Task entity = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Task não encontrado"));
+        authService.validateSelfOrAdmin(entity.getUser().getId());
         try {
             repository.deleteById(id);
-        }
-        catch (DataIntegrityViolationException e) {
+        } catch (DataIntegrityViolationException e) {
             throw new DatabaseException("Falha de integridade referencial");
         }
     }
