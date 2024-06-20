@@ -64,4 +64,18 @@ public class UserController {
         service.delete(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PutMapping("/promote/{id}")
+    public ResponseEntity<Void> promoteToAdmin(@PathVariable Long id) {
+        service.promoteToAdmin(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PutMapping("/demote/{id}")
+    public ResponseEntity<Void> removeAdminRole(@PathVariable Long id) {
+        service.removingAdmin(id);
+        return ResponseEntity.noContent().build();
+    }
 }
