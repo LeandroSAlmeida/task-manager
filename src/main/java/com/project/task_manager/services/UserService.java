@@ -27,6 +27,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -55,9 +56,9 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional(readOnly = true)
-    public Page<UserDTO> findAllPaged(Pageable pageable) {
-        Page<User> list = repository.findAll(pageable);
-        return list.map(x -> new UserDTO(x));
+    public List<UserDTO> findAll() {
+        List<User> list = repository.findAll();
+        return list.stream().map(UserDTO::new).collect(Collectors.toList());
     }
     @Transactional(readOnly = true)
     public UserDTO findById(Long id) {
