@@ -48,29 +48,33 @@ public class UserService implements UserDetailsService {
         User user = new User();
         user.setEmail(username);
         user.setPassword(result.get(0).getPassword());
-        for (UserDetailsProjection projection : result){
+        for (UserDetailsProjection projection : result) {
             user.addRole(new Role(projection.getRoleId(), projection.getAuthority()));
         }
         return user;
     }
 
     @Transactional(readOnly = true)
-    public Page<UserDTO> findAllPaged(Pageable pageable){
+    public Page<UserDTO> findAllPaged(Pageable pageable) {
         Page<User> list = repository.findAll(pageable);
         return list.map(x -> new UserDTO(x));
     }
     @Transactional(readOnly = true)
-    public UserDTO findById(Long id){
+    public UserDTO findById(Long id) {
         User result = repository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException("Recurso não encontrado")
         );
         return new UserDTO(result);
     }
     @Transactional
-    public UserDTO insert(UserInsertDTO dto){
+    public UserDTO insert(UserInsertDTO dto) {
         User entity = new User();
         copyDtoToEntity(dto,entity);
         entity.setPassword(passwordEncoder.encode(dto.getPassword()));
+        Role roleUser = roleRepository.findByAuthority("ROLE_USER");
+        if (roleUser != null) {
+            entity.getRoles().add(roleUser);
+        }
         entity = repository.save(entity);
         return new UserDTO(entity);
     }
@@ -99,6 +103,28 @@ public class UserService implements UserDetailsService {
         }
     }
 
+    @Transactional
+    public void promoteToAdmin(Long id) {
+        User entity = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
+        Role roleAdmin = roleRepository.findByAuthority("ROLE_ADMIN");
+        if (roleAdmin != null) {
+            entity.getRoles().add(roleAdmin);
+            repository.save(entity);
+        }
+    }
+
+    @Transactional
+    public void removingAdmin(Long id) {
+        User entity = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
+        Role roleAdmin = roleRepository.findByAuthority("ROLE_ADMIN");
+        if (roleAdmin != null && entity.getRoles().contains(roleAdmin)) {
+            entity.getRoles().remove(roleAdmin);
+            repository.save(entity);
+        } else {
+            throw new ResourceNotFoundException("Função ADMIN não encontrada para o usuário");
+        }
+    }
+
 
     private void copyDtoToEntity(UserDTO dto, User entity) {
         entity.setFirstName(dto.getFirstName());
@@ -106,14 +132,14 @@ public class UserService implements UserDetailsService {
         entity.setEmail(dto.getEmail());
 
         entity.getRoles().clear();
-        for (RoleDTO roleDto: dto.getRoles()){
+        for (RoleDTO roleDto: dto.getRoles()) {
             Role role = roleRepository.getReferenceById(roleDto.getId());
             entity.getRoles().add(role);
         }
 
     }
 
-    protected User authenticated(){
+    protected User authenticated() {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             Jwt jwtPrincipal = (Jwt) authentication.getPrincipal();
@@ -121,13 +147,13 @@ public class UserService implements UserDetailsService {
 
             return repository.findByEmail(username).get();
         }
-        catch (Exception e){
+        catch (Exception e) {
             throw new UsernameNotFoundException("Email not found");
         }
 
     }
     @Transactional(readOnly = true)
-    public UserDTO getMe(){
+    public UserDTO getMe() {
         User user = authenticated();
         return new UserDTO(user);
     }
