@@ -3,6 +3,7 @@ package com.project.task_manager.controllers.handlers;
 import com.project.task_manager.dto.CustomError;
 import com.project.task_manager.dto.ValidationError;
 import com.project.task_manager.services.exceptions.DatabaseException;
+import com.project.task_manager.services.exceptions.EmailAlreadyExistsException;
 import com.project.task_manager.services.exceptions.ForbiddenException;
 import com.project.task_manager.services.exceptions.ResourceNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -45,6 +46,13 @@ public class ControllerExceptionHandler {
     public ResponseEntity<CustomError> forbidden(ForbiddenException e, HttpServletRequest request) {
         HttpStatus status = HttpStatus.FORBIDDEN;
         CustomError err = new CustomError(Instant.now(),status.value(),e.getMessage(),request.getRequestURI());
+        return ResponseEntity.status(status).body(err);
+    }
+
+    @ExceptionHandler(EmailAlreadyExistsException.class)
+    public ResponseEntity<CustomError> emailAlreadyExists(EmailAlreadyExistsException e, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        CustomError err = new CustomError(Instant.now(), status.value(), e.getMessage(), request.getRequestURI());
         return ResponseEntity.status(status).body(err);
     }
 

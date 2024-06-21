@@ -9,12 +9,11 @@ import com.project.task_manager.projections.UserDetailsProjection;
 import com.project.task_manager.repositories.RoleRepository;
 import com.project.task_manager.repositories.UserRepository;
 import com.project.task_manager.services.exceptions.DatabaseException;
+import com.project.task_manager.services.exceptions.EmailAlreadyExistsException;
 import com.project.task_manager.services.exceptions.ResourceNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -69,6 +68,9 @@ public class UserService implements UserDetailsService {
     }
     @Transactional
     public UserDTO insert(UserInsertDTO dto) {
+        if (repository.findByEmail(dto.getEmail()).isPresent()) {
+            throw new EmailAlreadyExistsException("Email já está em uso");
+        }
         User entity = new User();
         copyDtoToEntity(dto,entity);
         entity.setPassword(passwordEncoder.encode(dto.getPassword()));
