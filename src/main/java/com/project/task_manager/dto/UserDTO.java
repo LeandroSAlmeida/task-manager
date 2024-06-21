@@ -1,6 +1,7 @@
 package com.project.task_manager.dto;
 
 import com.project.task_manager.domain.User;
+import jakarta.validation.constraints.NotBlank;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -8,8 +9,11 @@ import java.util.Set;
 public class UserDTO {
 
     private Long id;
+    @NotBlank(message = "First name cannot be empty")
     private String firstName;
+    @NotBlank(message = "Last name cannot be empty")
     private String lastName;
+    @NotBlank(message = "Email cannot be empty")
     private String email;
 
     Set<RoleDTO> roles = new HashSet<>();
