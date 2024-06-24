@@ -1,7 +1,9 @@
 package com.project.task_manager.dto;
 
-public class UserInsertDTO extends UserDTO {
+import io.swagger.v3.oas.annotations.media.Schema;
 
+public class UserInsertDTO extends UserDTO {
+    @Schema(description = "User Password")
     private String password;
 
     public UserInsertDTO() {
