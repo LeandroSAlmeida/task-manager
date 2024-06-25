@@ -16,7 +16,7 @@ import org.springframework.context.annotation.Configuration;
 public class OpenAPIConfig {
 
     @Bean
-    public OpenAPI dsmovieAPI() {
+    public OpenAPI TaskAPI() {
         return new OpenAPI()
                 .info(new Info()
                         .title("TaskManager API")
@@ -26,4 +26,5 @@ public class OpenAPIConfig {
                                 .name("Apache 2.0")
                                 .url("https://github.com/LeandroSAlmeida/task-manager")));
     }
+
 }
