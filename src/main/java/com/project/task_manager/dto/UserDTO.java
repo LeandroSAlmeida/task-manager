@@ -44,19 +44,39 @@ public class UserDTO {
         return id;
     }
 
-    public String getFirstName() {
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public @NotBlank(message = "First name cannot be empty") String getFirstName() {
         return firstName;
     }
 
-    public String getLastName() {
+    public void setFirstName(@NotBlank(message = "First name cannot be empty") String firstName) {
+        this.firstName = firstName;
+    }
+
+    public @NotBlank(message = "Last name cannot be empty") String getLastName() {
         return lastName;
     }
 
-    public String getEmail() {
+    public void setLastName(@NotBlank(message = "Last name cannot be empty") String lastName) {
+        this.lastName = lastName;
+    }
+
+    public @NotBlank(message = "Email cannot be empty") String getEmail() {
         return email;
+    }
+
+    public void setEmail(@NotBlank(message = "Email cannot be empty") String email) {
+        this.email = email;
     }
 
     public Set<RoleDTO> getRoles() {
         return roles;
+    }
+
+    public void setRoles(Set<RoleDTO> roles) {
+        this.roles = roles;
     }
 }
