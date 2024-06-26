@@ -25,6 +25,14 @@ public class RoleDTO {
         return id;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setAuthority(String authority) {
+        this.authority = authority;
+    }
+
     public String getAuthority() {
         return authority;
     }
